@@ -89,6 +89,10 @@ dist
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
 
+.env
+.env.*
+!.env.example
+
 # vuepress build output
 .vuepress/dist
 
@@ -141,3 +145,12 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Smart Mirror simulation artifacts and local secrets
+.tools/
+.pio/
+firmware/.pio/
+mirror/config/config.env
+mirror/data/*.jsonl
+mirror/data/*.tmp
+MagicMirror-master.tar.gz

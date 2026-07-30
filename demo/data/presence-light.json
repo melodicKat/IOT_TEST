@@ -1,0 +1,49 @@
+{
+  "name": "PIR và LDR đánh thức/giảm sáng gương",
+  "description": "Mô phỏng người bước tới gương, phòng tối dần, người rời đi và quay lại.",
+  "intervalMs": 5000,
+  "samples": [
+    {
+      "time": "T+00",
+      "temperature": 26.0,
+      "humidity": 62.0,
+      "ambientLight": 500,
+      "presence": false,
+      "note": "Phòng sáng và chưa có người"
+    },
+    {
+      "time": "T+05",
+      "temperature": 26.1,
+      "humidity": 62.5,
+      "ambientLight": 420,
+      "presence": true,
+      "note": "PIR phát hiện người, dashboard được đánh thức"
+    },
+    {
+      "time": "T+10",
+      "temperature": 26.3,
+      "humidity": 63.0,
+      "ambientLight": 45,
+      "presence": true,
+      "note": "Phòng tối, LDR kích hoạt auto dim"
+    },
+    {
+      "time": "T+15",
+      "temperature": 26.2,
+      "humidity": 63.2,
+      "ambientLight": 18,
+      "presence": false,
+      "note": "Người rời đi, bắt đầu bộ đếm trở về chế độ gương"
+    },
+    {
+      "time": "T+20",
+      "temperature": 26.0,
+      "humidity": 63.5,
+      "ambientLight": 120,
+      "presence": true,
+      "touch": "tap",
+      "view": "normal",
+      "note": "Người quay lại và chạm để xem tổng quan"
+    }
+  ]
+}

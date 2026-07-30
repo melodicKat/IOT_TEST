@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Smart Mirror: Start server",
+      "type": "shell",
+      "command": "npm start server",
+      "options": {
+        "cwd": "${workspaceFolder}/mirror"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Smart Mirror: Validate Wokwi demo",
+      "type": "shell",
+      "command": "npm run demo:validate",
+      "options": {
+        "cwd": "${workspaceFolder}/mirror"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Smart Mirror: Demo sensor check",
+      "type": "shell",
+      "command": "npm run demo:wokwi -- --scenario sensor-check",
+      "options": {
+        "cwd": "${workspaceFolder}/mirror"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Smart Mirror: Demo realistic day",
+      "type": "shell",
+      "command": "npm run demo:day",
+      "options": {
+        "cwd": "${workspaceFolder}/mirror"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

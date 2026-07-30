@@ -1,0 +1,39 @@
+{
+  "name": "Cảm ứng và bảng cài đặt",
+  "description": "Mô phỏng tap, double tap và long press của touch pad trước khi khôi phục giao diện.",
+  "intervalMs": 4000,
+  "samples": [
+    {
+      "time": "T+00",
+      "temperature": 26.2,
+      "humidity": 64.5,
+      "touch": "tap",
+      "view": "calendar",
+      "note": "Tap một lần để chuyển sang lịch"
+    },
+    {
+      "time": "T+04",
+      "temperature": 26.3,
+      "humidity": 64.8,
+      "touch": "doubleTap",
+      "view": "settings",
+      "note": "Chạm hai lần để mở Settings"
+    },
+    {
+      "time": "T+08",
+      "temperature": 26.5,
+      "humidity": 65.0,
+      "touch": "longPress",
+      "view": "mirror",
+      "note": "Giữ cảm ứng để ẩn toàn bộ thông tin"
+    },
+    {
+      "time": "T+12",
+      "temperature": 26.4,
+      "humidity": 64.6,
+      "touch": "tap",
+      "view": "normal",
+      "note": "Tap để đánh thức và về Tổng quan"
+    }
+  ]
+}

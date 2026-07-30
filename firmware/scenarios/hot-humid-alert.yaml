@@ -1,0 +1,75 @@
+name: DHT22 hot and humid room
+version: 1
+author: Smart Mirror IoT simulation
+
+steps:
+  - delay: 8s
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 25
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 61
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 350
+  - delay: 6s
+
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 27.5
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 70
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 260
+  - delay: 6s
+
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 30.7
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 81.4
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 45
+  - delay: 6s
+
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 28.2
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 73
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 30
+  - delay: 6s
+
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 26.4
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 65.3
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 12
+  - delay: 6s

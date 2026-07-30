@@ -1,0 +1,143 @@
+name: Realistic day - temperature, light and alerts
+version: 1
+author: Smart Mirror IoT simulation
+
+# End-to-end path for every stage:
+# Wokwi set-control -> DHT22/LDR -> ESP32 firmware -> OLED -> MQTT/TLS -> Mirror.
+#
+# The firmware samples DHT22 every 2s and LDR every 500ms. After wait-serial
+# confirms that the ESP32 read the new DHT22 value, the stage remains stable for
+# 8 seconds so the OLED, Mirror and alert channels are easy to observe.
+#
+# Default alert thresholds: temperature > 30C, humidity > 80%.
+# Expected duration including WiFi/MQTT startup: about 90-110 seconds.
+steps:
+  - wait-serial: "[MQTT] Connected with TLS, auth and retained LWT"
+
+  # 05:30 - pre-dawn: cool, dim, no alert.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 23.5
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 78
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 8
+  - wait-serial: "[DHT22] 23.5 C, 78.0 %"
+  - delay: 8s
+
+  # 07:00 - sunrise: the room becomes brighter.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 24.7
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 74
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 240
+  - wait-serial: "[DHT22] 24.7 C, 74.0 %"
+  - delay: 8s
+
+  # 10:00 - normal daylight and comfortable temperature.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 27.2
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 65
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 520
+  - wait-serial: "[DHT22] 27.2 C, 65.0 %"
+  - delay: 8s
+
+  # 12:30 - near the warning threshold, but no alert yet.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 29.6
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 58
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 1000
+  - wait-serial: "[DHT22] 29.6 C, 58.0 %"
+  - delay: 8s
+
+  # 14:00 - heat crosses 30C: temperature alert must appear.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 31.4
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 62
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 900
+  - wait-serial: "[DHT22] 31.4 C, 62.0 %"
+  - delay: 8s
+
+  # 16:00 - hot and humid: temperature is > limit + 2C, so escalation is sent.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 32.4
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 84
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 260
+  - wait-serial: "[DHT22] 32.4 C, 84.0 %"
+  - delay: 8s
+
+  # 18:30 - rain cloud: temperature recovers, room dims, humidity stays high.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 28.5
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 86
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 35
+  - wait-serial: "[DHT22] 28.5 C, 86.0 %"
+  - delay: 8s
+
+  # 22:00 - night: all alerts clear and auto brightness returns to deep dim.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 25.6
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 72
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 6
+  - wait-serial: "[DHT22] 25.6 C, 72.0 %"
+  - delay: 8s

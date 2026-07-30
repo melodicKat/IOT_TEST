@@ -1,0 +1,28 @@
+name: WiFi MQTT outage and recovery
+version: 1
+author: Smart Mirror IoT simulation
+
+# Firmware dùng thao tác giữ nút 4 giây để bật/tắt airplane mode.
+steps:
+  - delay: 10s
+  - set-control:
+      part-id: button
+      control: pressed
+      value: 1
+  - delay: 4500ms
+  - set-control:
+      part-id: button
+      control: pressed
+      value: 0
+  - delay: 10s
+
+  - set-control:
+      part-id: button
+      control: pressed
+      value: 1
+  - delay: 4500ms
+  - set-control:
+      part-id: button
+      control: pressed
+      value: 0
+  - delay: 15s

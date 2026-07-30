@@ -1,0 +1,74 @@
+{
+  "name": "Một ngày trong phòng tại Việt Nam",
+  "description": "Nhiệt độ và độ ẩm thay đổi từ sáng sớm đến tối, kèm hai lần đổi chế độ hiển thị.",
+  "intervalMs": 5000,
+  "samples": [
+    {
+      "time": "06:30",
+      "temperature": 23.4,
+      "humidity": 76.0,
+      "ambientLight": 18,
+      "presence": false,
+      "note": "Sáng sớm, phòng mát nhưng độ ẩm cao"
+    },
+    {
+      "time": "07:30",
+      "temperature": 24.2,
+      "humidity": 72.5,
+      "ambientLight": 120,
+      "presence": true,
+      "note": "Bắt đầu có người sử dụng phòng"
+    },
+    {
+      "time": "09:00",
+      "temperature": 25.6,
+      "humidity": 66.8,
+      "ambientLight": 420,
+      "presence": true,
+      "button": "calendar",
+      "note": "Chuyển sang giao diện chỉ xem lịch"
+    },
+    {
+      "time": "11:30",
+      "temperature": 27.8,
+      "humidity": 59.4,
+      "ambientLight": 650,
+      "presence": true,
+      "note": "Nhiệt độ tăng gần trưa"
+    },
+    {
+      "time": "13:30",
+      "temperature": 29.3,
+      "humidity": 55.1,
+      "ambientLight": 800,
+      "presence": false,
+      "note": "Mức cao nhất trong ngày"
+    },
+    {
+      "time": "15:30",
+      "temperature": 28.1,
+      "humidity": 58.7,
+      "ambientLight": 500,
+      "presence": false,
+      "button": "mirror",
+      "note": "Ẩn toàn bộ thông tin, trở về gương bình thường"
+    },
+    {
+      "time": "18:00",
+      "temperature": 26.7,
+      "humidity": 65.9,
+      "ambientLight": 75,
+      "presence": true,
+      "note": "Chiều tối, độ ẩm tăng trở lại"
+    },
+    {
+      "time": "21:00",
+      "temperature": 25.5,
+      "humidity": 71.6,
+      "ambientLight": 12,
+      "presence": false,
+      "button": "normal",
+      "note": "Hiện lại giao diện tổng quan"
+    }
+  ]
+}

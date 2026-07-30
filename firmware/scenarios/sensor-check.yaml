@@ -1,0 +1,73 @@
+name: Sensor smoke test - DHT22, LDR, OLED, MQTT and alerts
+version: 1
+author: Smart Mirror IoT simulation
+
+# Automated controls currently supported by this project: DHT22 and LDR.
+# PIR is checked interactively in the VS Code simulator with "Simulate Motion".
+# Every value below is held for at least 7 seconds after the ESP32 reads it.
+steps:
+  - wait-serial: "[MQTT] Connected with TLS, auth and retained LWT"
+
+  # Baseline: bright room, comfortable climate, no alert.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 25
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 60
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 500
+  - wait-serial: "[DHT22] 25.0 C, 60.0 %"
+  - delay: 7s
+
+  # LDR transition: room becomes dark, OLED and Mirror must dim.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 25.5
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 62
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 20
+  - wait-serial: "[DHT22] 25.5 C, 62.0 %"
+  - delay: 7s
+
+  # Rule Engine transition: both default thresholds are exceeded.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 31.5
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 84
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 140
+  - wait-serial: "[DHT22] 31.5 C, 84.0 %"
+  - delay: 10s
+
+  # Recovery: both alerts clear and normal brightness returns.
+  - set-control:
+      part-id: dht
+      control: temperature
+      value: 27
+  - set-control:
+      part-id: dht
+      control: humidity
+      value: 70
+  - set-control:
+      part-id: ldr
+      control: lux
+      value: 420
+  - wait-serial: "[DHT22] 27.0 C, 70.0 %"
+  - delay: 8s

@@ -1,0 +1,58 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Smart Mirror IoT Simulation//Calendar Demo//VI
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Lịch demo Gương thông minh
+X-WR-TIMEZONE:Asia/Ho_Chi_Minh
+BEGIN:VEVENT
+UID:daily-briefing@smartmirror.demo
+DTSTAMP:20260730T100000Z
+DTSTART;TZID=Asia/Ho_Chi_Minh:20260731T073000
+DTEND;TZID=Asia/Ho_Chi_Minh:20260731T080000
+RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR
+SUMMARY:Xem lịch và thời tiết buổi sáng
+DESCRIPTION:Sự kiện mẫu không chứa thông tin cá nhân.
+LOCATION:Gương thông minh
+END:VEVENT
+BEGIN:VEVENT
+UID:monday-project@smartmirror.demo
+DTSTAMP:20260730T100000Z
+DTSTART;TZID=Asia/Ho_Chi_Minh:20260803T090000
+DTEND;TZID=Asia/Ho_Chi_Minh:20260803T100000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Họp tiến độ dự án IoT
+DESCRIPTION:Kiểm tra ESP32\, MQTT và giao diện MagicMirror.
+LOCATION:Phòng demo
+END:VEVENT
+BEGIN:VEVENT
+UID:wednesday-maintenance@smartmirror.demo
+DTSTAMP:20260730T100000Z
+DTSTART;TZID=Asia/Ho_Chi_Minh:20260805T140000
+DTEND;TZID=Asia/Ho_Chi_Minh:20260805T143000
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:Kiểm tra cảm biến và kết nối
+DESCRIPTION:Sự kiện bảo trì mô phỏng hằng tuần.
+LOCATION:Phòng kỹ thuật
+END:VEVENT
+BEGIN:VEVENT
+UID:friday-report@smartmirror.demo
+DTSTAMP:20260730T100000Z
+DTSTART;TZID=Asia/Ho_Chi_Minh:20260807T160000
+DTEND;TZID=Asia/Ho_Chi_Minh:20260807T163000
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:Tổng kết dữ liệu môi trường
+DESCRIPTION:Xem lại nhiệt độ\, độ ẩm và trạng thái kết nối.
+LOCATION:Phòng demo
+END:VEVENT
+BEGIN:VEVENT
+UID:saturday-family@smartmirror.demo
+DTSTAMP:20260730T100000Z
+DTSTART;TZID=Asia/Ho_Chi_Minh:20260801T083000
+DTEND;TZID=Asia/Ho_Chi_Minh:20260801T093000
+RRULE:FREQ=WEEKLY;BYDAY=SA
+SUMMARY:Lịch sinh hoạt cuối tuần
+DESCRIPTION:Sự kiện mẫu cho chế độ xem lịch.
+LOCATION:Tại nhà
+END:VEVENT
+END:VCALENDAR

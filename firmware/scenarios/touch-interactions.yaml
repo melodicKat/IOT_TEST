@@ -1,0 +1,65 @@
+name: Touch sensor interactions
+version: 1
+author: Smart Mirror IoT simulation
+
+# Touch pad là input active-low mô phỏng TTP223 bằng pushbutton không bounce.
+steps:
+  - delay: 8s
+
+  # Tap: NORMAL -> CALENDAR
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 1
+  - delay: 120ms
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 0
+  - delay: 2s
+
+  # Double tap: mở SETTINGS
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 0
+  - delay: 160ms
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 1
+  - delay: 100ms
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 0
+  - delay: 3s
+
+  # Long press: SETTINGS -> MIRROR
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 1
+  - delay: 1500ms
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 0
+  - delay: 3s
+
+  # Tap: đánh thức MIRROR -> NORMAL
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 1
+  - delay: 120ms
+  - set-control:
+      part-id: touch
+      control: pressed
+      value: 0
+  - delay: 3s

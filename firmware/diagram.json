@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "author": "Smart Mirror IoT simulation",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 56,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht",
+      "top": -104,
+      "left": 360,
+      "attrs": { "temperature": "24", "humidity": "55" }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr",
+      "top": -104,
+      "left": 600,
+      "attrs": { "lux": "400", "threshold": "2.5" }
+    },
+    {
+      "type": "wokwi-pir-motion-sensor",
+      "id": "pir",
+      "top": 134,
+      "left": 600,
+      "attrs": { "delayTime": "15", "inhibitTime": "1.2" }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled",
+      "top": 620,
+      "left": 0,
+      "attrs": { "i2cAddress": "0x3c" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "button",
+      "top": 326,
+      "left": 382,
+      "attrs": { "color": "blue", "label": "VIEW", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "touch",
+      "top": 326,
+      "left": -216,
+      "attrs": { "color": "yellow", "label": "TOUCH", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led",
+      "top": -104,
+      "left": -204,
+      "attrs": { "color": "green", "label": "MQTT" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": -30,
+      "left": -193,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    ["esp:TX", "$serialMonitor:RX", "", []],
+    ["esp:RX", "$serialMonitor:TX", "", []],
+    ["esp:3V3", "dht:VCC", "red", []],
+    ["esp:GND.1", "dht:GND", "black", []],
+    ["esp:15", "dht:SDA", "green", []],
+    ["esp:3V3", "ldr:VCC", "red", ["v-86.4", "h470.4", "*", "v28.8"]],
+    ["esp:GND.1", "ldr:GND", "black", ["v-67.2", "h489.6", "*", "v19.2"]],
+    ["esp:34", "ldr:AO", "blue", ["h38.4", "v-124.8", "h364.8"]],
+    ["esp:3V3", "pir:VCC", "red", ["h48", "v-48", "h480"]],
+    ["esp:GND.1", "pir:GND", "black", ["h67.2", "v-28.8", "h460.8"]],
+    ["esp:27", "pir:OUT", "orange", ["h76.8", "v9.6", "h403.2"]],
+    ["oled:GND", "esp:GND.1", "black", ["v-28.8", "*", "v28.8"]],
+    ["oled:VCC", "esp:3V3", "red", ["v-38.4", "*", "v38.4"]],
+    ["oled:SCL", "esp:22", "purple", ["v-48", "*", "v48"]],
+    ["oled:SDA", "esp:21", "blue", ["v-57.6", "*", "v57.6"]],
+    ["esp:4", "button:1.l", "orange", ["h38.4", "v300.8", "h278.4"]],
+    ["esp:GND.2", "button:2.l", "black", ["v57.6", "h374.4", "v204.8"]],
+    ["esp:13", "touch:1.r", "cyan", ["h-48", "v281.6", "h-115.2"]],
+    ["esp:GND.2", "touch:2.r", "black", ["v76.8", "h-230.4", "v185.6"]],
+    ["esp:18", "r1:1", "green", []],
+    ["r1:2", "led:A", "green", []],
+    ["led:C", "esp:GND.2", "black", []]
+  ],
+  "dependencies": {}
+}

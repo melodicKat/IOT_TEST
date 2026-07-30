@@ -1,0 +1,44 @@
+{
+  "name": "Mất mạng và tự phục hồi",
+  "description": "Telemetry bình thường, Edge offline hai nhịp, sau đó reconnect và tiếp tục gửi dữ liệu.",
+  "intervalMs": 5000,
+  "samples": [
+    {
+      "time": "T+00",
+      "online": true,
+      "temperature": 26.1,
+      "humidity": 64.2,
+      "note": "MQTT/TLS hoạt động bình thường"
+    },
+    {
+      "time": "T+05",
+      "temperature": 26.3,
+      "humidity": 64.8,
+      "note": "Telemetry trước khi mất mạng"
+    },
+    {
+      "time": "T+10",
+      "online": false,
+      "note": "Mô phỏng WiFi/MQTT bị ngắt"
+    },
+    {
+      "time": "T+15",
+      "online": false,
+      "note": "Edge vẫn offline"
+    },
+    {
+      "time": "T+20",
+      "online": true,
+      "temperature": 26.9,
+      "humidity": 66.1,
+      "note": "MQTT reconnect thành công"
+    },
+    {
+      "time": "T+25",
+      "temperature": 27.0,
+      "humidity": 65.7,
+      "button": "calendar",
+      "note": "Luồng dữ liệu và chế độ lịch hoạt động lại"
+    }
+  ]
+}
