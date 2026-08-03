@@ -25,10 +25,13 @@ Set-Location mirror
 npm run demo:day
 ```
 
-Mở `http://localhost:8080` trước khi chạy demo. `demo:day` sẽ build firmware, điều
-khiển trực tiếp DHT22/LDR trong Wokwi, chờ ESP32 đọc dữ liệu rồi mới kiểm tra luồng
-OLED → MQTT → Mirror. Lần đầu chạy demo tự động cần
-`SECRET_WOKWI_CLI_TOKEN` trong `.env`.
+Mở `http://localhost:8080` trước khi chạy demo. `demo:day` sẽ build firmware, tạo
+một **phiên Wokwi Automation headless riêng**, điều khiển trực tiếp DHT22/LDR
+trong phiên đó, chờ ESP32 đọc dữ liệu rồi mới tiếp tục luồng OLED → MQTT → Mirror.
+Phiên automation không gắn vào tab **Wokwi Simulator** đang mở trong VS Code, vì
+vậy tab GUI sẽ không tự đổi sensor/OLED. Lần đầu chạy demo tự động cần
+`SECRET_WOKWI_CLI_TOKEN` trong `.env`; nên dừng Wokwi extension trước khi chạy để
+tránh hai ESP32 mô phỏng cùng publish lên một MQTT namespace.
 
 Nếu muốn quan sát và chỉnh cảm biến bằng tay: build `firmware`, mở
 `firmware/diagram.json`, nhấn `F1` → **Wokwi: Start Simulator**.
@@ -501,11 +504,11 @@ hiển thị trong tối đa 3 giây.
 
 ### 4.1. Chọn đúng loại demo
 
-| Cách chạy                          | Đường dữ liệu                                               | Dùng khi                          |
-| ---------------------------------- | ----------------------------------------------------------- | --------------------------------- |
-| Chỉnh sensor trong Wokwi extension | Sensor → firmware/OLED → HiveMQ → Mirror                    | Nghiệm thu trực quan đầy đủ       |
-| `npm run demo:wokwi` / `demo:day`  | Wokwi Automation → sensor → firmware/OLED → HiveMQ → Mirror | Demo tự động end-to-end           |
-| `npm run demo:cloud`               | JSON → MQTT publisher → HiveMQ → Mirror                     | Chẩn đoán riêng Cloud/Application |
+| Cách chạy                          | Đường dữ liệu                                                        | Dùng khi                          |
+| ---------------------------------- | -------------------------------------------------------------------- | --------------------------------- |
+| Chỉnh sensor trong Wokwi extension | Sensor → firmware/OLED → HiveMQ → Mirror                             | Nghiệm thu trực quan đầy đủ       |
+| `npm run demo:wokwi` / `demo:day`  | Wokwi Automation headless → sensor → firmware/OLED → HiveMQ → Mirror | Demo tự động end-to-end           |
+| `npm run demo:cloud`               | JSON → MQTT publisher → HiveMQ → Mirror                              | Chẩn đoán riêng Cloud/Application |
 
 `demo:cloud` **bỏ qua ESP32, sensor và OLED**, vì vậy không được dùng để chứng minh
 luồng Edge. Không chạy Cloud demo và Wokwi demo cùng lúc trên cùng topic prefix vì
@@ -549,20 +552,128 @@ Catalog Wokwi:
 | `network-recovery`   | khoảng 45 giây + startup | VIEW giữ 4 giây, airplane mode, offline và reconnect          |
 | `touch-interactions` | khoảng 20 giây + startup | Tap → Calendar, double tap → Settings, giữ → Mirror, tap wake |
 
-Runner mặc định:
+#### 4.2.1. `demo:day` thực sự chạy code nào?
 
-1. kiểm tra Mirror;
-2. build firmware bằng PlatformIO;
-3. tạo lại `.tools/wokwi-venv` nếu cần và cài dependency từ
+Lệnh `npm run demo:day` không phải một file dữ liệu publish thẳng lên HiveMQ. Nó
+là alias trong `mirror/package.json` để chạy:
+
+```text
+node mirror/scripts/demo-wokwi.js --scenario realistic-day
+```
+
+`mirror/scripts/demo-wokwi.js` là launcher và thực hiện lần lượt:
+
+1. đọc root `.env`, parse tên scenario/engine/timeout và kiểm tra scenario có trong
+   catalog;
+2. gửi HTTP request đến `http://localhost:8080` để chắc chắn Mirror đã sẵn sàng;
+3. gọi PlatformIO `pio run` để build đúng firmware đang nằm trong `firmware/`;
+4. kiểm tra `SECRET_WOKWI_CLI_TOKEN` nhưng không in token ra log;
+5. tạo `.tools/wokwi-venv` ở lần chạy đầu và cài `wokwi-client` cùng `PyYAML` từ
    `firmware/requirements-demo.txt`;
-4. upload firmware vào Wokwi Simulation API;
-5. dùng `set-control` đổi giá trị của chính linh kiện trong `diagram.json`;
-6. chờ Serial xác nhận ESP32 đã đọc mỗi mốc;
-7. lưu Serial log trong `firmware/.pio/`.
+6. gọi `firmware/scripts/wokwi_sdk_demo.py`, truyền đường dẫn scenario và đường
+   dẫn Serial log. Tùy chọn `--engine cli` thay bước này bằng `wokwi-cli`, nhưng
+   vẫn tạo một phiên automation riêng chứ không điều khiển tab VS Code.
 
-Engine SDK chạy headless: dữ liệu vẫn đi qua firmware và lệnh vẽ OLED, còn giao
-diện cần quan sát trực tiếp là Mirror trong browser. Muốn **nhìn OLED ảo bằng mắt**
-và kéo sensor thủ công, dùng Wokwi extension theo mục 4.4.
+`firmware/scripts/wokwi_sdk_demo.py` sau đó:
+
+1. tạo `WokwiClient` bằng token và kết nối Wokwi Simulation API;
+2. upload `diagram.json`, `bootloader.bin`, `partitions.bin` và `firmware.bin` vừa
+   build;
+3. khởi động ESP32 mô phỏng ở trạng thái pause, gắn Serial monitor rồi mới cho
+   simulation chạy để không mất log lúc boot;
+4. đọc từng bước YAML và gọi `client.set_control(part-id, control, value)` đối với
+   chính linh kiện `dht`, `ldr`, `btn` hoặc `touch` trong bản diagram đã upload;
+5. với `wait-serial`, tiếp tục simulation theo từng khoảng 2 giây cho đến khi
+   firmware in đúng chuỗi mong đợi; với `delay`, giữ nguyên trạng thái sensor theo
+   thời gian mô phỏng;
+6. khi hết scenario, đóng Serial log và disconnect phiên Wokwi trong khối
+   `finally`, kể cả khi một bước bị lỗi.
+
+#### 4.2.2. Luồng của một mốc dữ liệu
+
+```mermaid
+sequenceDiagram
+  participant CMD as npm demo:day
+  participant RUN as demo-wokwi.js
+  participant SDK as Wokwi SDK headless
+  participant SENSOR as DHT22 / LDR ảo
+  participant ESP as ESP32 firmware
+  participant OLED as SSD1306 ảo
+  participant MQTT as HiveMQ Cloud
+  participant BRIDGE as MMM-ESP32Bridge
+  participant UI as Mirror browser
+
+  CMD->>RUN: chọn realistic-day
+  RUN->>RUN: kiểm tra Mirror + pio run
+  RUN->>SDK: diagram + firmware + scenario
+  SDK->>SDK: tạo phiên simulation riêng
+  loop Mỗi mốc trong YAML
+    SDK->>SENSOR: set-control(part-id, control, value)
+    SENSOR-->>ESP: tín hiệu cảm biến mô phỏng
+    ESP->>ESP: đọc DHT 2s / LDR 0.5s
+    ESP->>OLED: vẽ số đo + trạng thái kết nối
+    ESP->>MQTT: publish retained telemetry qua TLS 8883
+    MQTT-->>BRIDGE: subscribe qua WSS/TLS 8884
+    BRIDGE-->>UI: Socket.IO + cập nhật DOM trực tiếp
+    ESP-->>SDK: Serial xác nhận số đo
+    SDK->>SDK: giữ mốc 8s rồi mới chuyển tiếp
+  end
+```
+
+Ví dụ, ba bước YAML:
+
+```yaml
+- set-control:
+    part-id: dht
+    control: temperature
+    value: 32.4
+- wait-serial: "[DHT22] 32.4 C, 84.0 %"
+- delay: 8s
+```
+
+có nghĩa là Wokwi đổi control của DHT22 thật trong simulation; firmware phải đọc
+được `32.4°C / 84%` và in ra Serial thì runner mới giữ mốc 8 giây. Đây không phải
+giá trị được chèn thẳng vào HTML hoặc publish từ Node. Trong firmware,
+`readDhtAndPublish()` cập nhật biến hiển thị và publish hai topic nhiệt độ/độ ẩm;
+`readLdrAndPublish()` tính lux, đổi contrast OLED rồi publish ambient-light;
+`drawDisplay()` ghi framebuffer SSD1306. Phía Mirror, `node_helper.js` subscribe
+sáu topic, validate payload, chạy Rule Engine rồi gửi `ESP32_DATA` đến browser.
+
+Khoảng lấy mẫu DHT22 tối đa 2 giây, LDR/OLED 0,5 giây và browser cập nhật DOM ngay
+khi nhận Socket.IO. `wait-serial` ngăn scenario nhảy sang mốc tiếp theo trước khi
+firmware kịp lấy mẫu; `delay: 8s` chỉ bắt đầu sau hàng rào này. Vì vậy mỗi mốc đủ
+lâu để quan sát và ngân sách end-to-end vẫn dưới 3 giây.
+
+#### 4.2.3. Vì sao tab Wokwi VS Code không thay đổi?
+
+Project có hai cách khởi động Wokwi dùng chung `wokwi.toml`, `diagram.json` và
+firmware nhưng **không dùng chung bộ nhớ/trạng thái simulation**:
+
+| Phiên            | Ai tạo                            | Có giao diện circuit | Cách đổi sensor            |
+| ---------------- | --------------------------------- | -------------------- | -------------------------- |
+| Wokwi VS Code    | `F1` → **Wokwi: Start Simulator** | Có                   | Click/kéo sensor thủ công  |
+| Wokwi Automation | `npm run demo:day` → SDK/CLI      | Không, chạy headless | YAML `set-control` tự động |
+
+SDK upload một bản diagram mới và tạo một ESP32 mới trên Simulation API. Nó không
+attach vào webview của extension, nên DHT22/LDR và OLED trong tab VS Code đang mở
+không phản ánh phiên headless. OLED **vẫn được firmware vẽ trong phiên automation**,
+nhưng không có webview để trình bày framebuffer đó; bằng chứng chạy được ghi qua
+Serial tại `firmware/.pio/demo-<scenario>-serial.log`.
+
+Không chạy hai phiên cùng lúc. Vì chúng dùng cùng firmware, MQTT topic prefix và
+có thể cùng MQTT client ID, HiveMQ có thể ngắt client cũ khi client mới kết nối;
+retained telemetry của hai phiên cũng có thể ghi đè lẫn nhau. Quy trình ổn định là:
+
+```text
+Demo tự động: Stop Wokwi VS Code → npm run demo:day → xem Mirror + terminal/log
+Demo trực quan: không chạy demo:day → Start Wokwi Simulator → chỉnh sensor bằng tay
+```
+
+Extension Wokwi VS Code hiện chỉ công khai Start/Pause/Resume/Restart, không có API
+`set-control` để script workspace điều khiển tab GUI. Nếu cần bằng chứng OLED tự
+động, có thể bổ sung `take-screenshot` trong Automation Scenario; nếu bắt buộc nhìn
+circuit chuyển động trực tiếp thì dùng quy trình thủ công ở mục 4.4. Không dùng
+Serial override để nghiệm thu luồng sensor vì cách đó bỏ qua DHT22/LDR ảo.
 
 Các tùy chọn hữu ích:
 
@@ -927,6 +1038,21 @@ kiểm tra timezone Windows và timezone của trình duyệt.
 - xóa tùy chọn `--engine cli` để trở lại SDK mặc định;
 - xem Serial log được tạo trong `firmware/.pio/`;
 - không dùng `--loop` với Wokwi; tùy chọn đó chỉ thuộc `demo:cloud`.
+
+### Demo chạy nhưng tab Wokwi VS Code không đổi sensor/OLED
+
+Đây là hành vi dự kiến, không phải lỗi DHT22 hoặc OLED. `npm run demo:day` dùng SDK
+tạo một phiên Wokwi Automation headless riêng; extension VS Code là một phiên GUI
+khác và không có API công khai để nhận `set-control` từ runner.
+
+- dừng Wokwi Simulator trong VS Code trước khi chạy demo tự động;
+- quan sát dữ liệu trên Mirror và terminal thay vì tab Wokwi;
+- mở `firmware/.pio/demo-realistic-day-serial.log` để xác nhận ESP32 đã đọc từng
+  mốc DHT22/LDR;
+- nếu muốn nhìn OLED trong tab Wokwi, không chạy `demo:day`; dùng quy trình thủ công
+  ở mục 4.4;
+- nếu Mirror nhận số liệu lúc đúng lúc sai, kiểm tra có hai simulator hoặc
+  `demo:cloud` đang cùng publish vào một topic prefix hay không.
 
 ### Phóng to/thu nhỏ làm giao diện sai hoặc không cuộn
 
